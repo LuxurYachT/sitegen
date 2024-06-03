@@ -6,9 +6,9 @@ from parentnode import ParentNode
 
 
 
-def main(text, type, url):
-    new_text = TextNode(text, type, url)
-    print(repr(new_text))
+def main():
+    move_static_to_public(os.path.expanduser("~/workspace/sitegen/static"))
+
 
 
 
@@ -283,9 +283,10 @@ def move_static_to_public(path, parent_path=""):
         item_path = os.path.join(path, i)
         if os.path.isfile(item_path):
             shutil.copy(item_path, target_path)
+            os.remove(item_path)
         else:
             move_static_to_public(item_path, os.path.join(parent_path, i))
+            shutil.rmtree(item_path)
 
-
-main("This is a text node", "bold", "https://www.boot.dev")
+main()
 
