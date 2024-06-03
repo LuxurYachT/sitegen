@@ -1,8 +1,9 @@
-import re
+import re, os, shutil
 from textnode import TextNode
 from leafnode import LeafNode
 from blocknode import BlockNode
 from parentnode import ParentNode
+
 
 
 def main(text, type, url):
@@ -270,6 +271,20 @@ def create_html(markdown):
     htmlnodes = markdown_to_html_node(markdown)
     div = ParentNode("div", htmlnodes)
     return div.to_html
+
+def move_static_to_public(path, parent_path=""):
+    path = os.path.expanduser(path)
+    target_base = os.path.expanduser("~/workspace/sitegen/public")
+    target_path = os.path.join(target_base, parent_path)
+    if not os.path.exists(target_path):
+        os.makedirs(target_path)
+    dir_contents = os.listdir(path)
+    for i in dir_contents:
+        item_path = os.path.join(path, i)
+        if os.path.isfile(item_path):
+            shutil.copy(item_path, target_path)
+        else:
+            move_static_to_public(item_path, os.path.join(parent_path, i))
 
 
 main("This is a text node", "bold", "https://www.boot.dev")
