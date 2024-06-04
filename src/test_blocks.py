@@ -3,7 +3,7 @@ import unittest
 from blocknode import BlockNode
 from parentnode import ParentNode
 from leafnode import LeafNode
-from main import block_to_block_type, markdown_to_block, markdown_to_html_node
+from main import block_to_block_type, markdown_to_block, markdown_to_html_node, extract_title
 
 
 class TestBlocks(unittest.TestCase):
@@ -33,3 +33,11 @@ class TestBlocks(unittest.TestCase):
 
 > *Italic Quote*"""
         self.assertEqual(markdown_to_html_node("Test"), [ParentNode("p", [LeafNode(None, "Test")])])
+
+    def test_extract_title(self):
+        mark = """# This is the header
+
+This is just some words
+
+## This is header 2"""
+        self.assertEqual(extract_title(mark), "# This is the header")

@@ -10,6 +10,15 @@ def main():
     move_static_to_public(os.path.expanduser("~/workspace/sitegen/static"))
 
 
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    with open(from_path) as file:
+        markdown = file.read()
+    with open(template_path) as file:
+        template = file.read()
+    html = markdown_to_html_node(markdown)
+    title = extract_title(markdown)
+    
 
 
 def text_node_to_html_node(text_node):
@@ -258,6 +267,14 @@ def markdown_to_html_node(markdown):
     for block in blocks:
         parent_nodes.append(block_to_html(block))
     return parent_nodes
+
+
+def extract_title(markdown):
+    lines = markdown.split("\n\n")
+    for line in lines:
+        if line.startswith("# "):
+            return line
+
 
 def block_to_html(block):
     text_nodes = text_to_textnode(block.block_text)
