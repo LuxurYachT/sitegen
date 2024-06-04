@@ -8,6 +8,7 @@ from parentnode import ParentNode
 
 def main():
     move_static_to_public(os.path.expanduser("~/workspace/sitegen/static"))
+    generate_page(os.path.expanduser("~/workspace/sitegen/content/index.md"), os.path.expanduser("~/workspace/sitegen/template.html"), os.path.expanduser("~/workspace/sitegen/public/index.html"))
 
 
 def generate_page(from_path, template_path, dest_path):
@@ -18,6 +19,9 @@ def generate_page(from_path, template_path, dest_path):
         template = file.read()
     html = markdown_to_html_node(markdown)
     title = extract_title(markdown)
+    new_page = template.replace("{{ Title }}", title).replace("{{ Content }}", html)
+    if not os.path.exists(dest_path):
+        os.makedirs(dest_path)
     
 
 
