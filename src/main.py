@@ -8,7 +8,7 @@ from parentnode import ParentNode
 
 def main():
     move_static_to_public(os.path.expanduser("~/workspace/sitegen/static"))
-    generate_page(os.path.expanduser("~/workspace/sitegen/content/index.md"), os.path.expanduser("~/workspace/sitegen/template.html"), os.path.expanduser("~/workspace/sitegen/public/index.html"))
+    generate_page(os.path.expanduser("~/workspace/sitegen/content/index.md"), os.path.expanduser("~/workspace/sitegen/template.html"), os.path.expanduser("~/workspace/sitegen/public"))
 
 
 def generate_page(from_path, template_path, dest_path):
@@ -17,12 +17,14 @@ def generate_page(from_path, template_path, dest_path):
         markdown = file.read()
     with open(template_path) as file:
         template = file.read()
-    html = markdown_to_html_node(markdown)
+    html = create_html(markdown)
     title = extract_title(markdown)
     new_page = template.replace("{{ Title }}", title).replace("{{ Content }}", html)
     if not os.path.exists(dest_path):
         os.makedirs(dest_path)
-    
+    target_file_path = os.path.join(dest_path, "index.html")
+    with open(target_file_path, "w") as file:
+        file.write(new_page)
 
 
 def text_node_to_html_node(text_node):
@@ -36,11 +38,11 @@ def text_node_to_html_node(text_node):
         case "code":
             return LeafNode("code", text_node.text)
         case "link":
-            return LeafNode("a", text_node.text, text_node.url)
-        case "image:":
-            return LeafNode("img", "", text_node.url)
+            return LeafNode("a", text_node.text, {"href":text_node.url})
+        case "image":
+            return LeafNode("img", "", {"src":text_node.url, "alt":text_node.text})
         case _:
-            raise ValueError("Invalid text type")
+            raise ValueError("Invalid text type in ", text_node.text," with type ", text_node.text_type)
 
 def split_nodes_delimiter(old_nodes, delimiter, regex, target):
     new_nodes = []
@@ -291,7 +293,7 @@ def block_to_html(block):
 def create_html(markdown):
     htmlnodes = markdown_to_html_node(markdown)
     div = ParentNode("div", htmlnodes)
-    return div.to_html
+    return div.to_html()
 
 def move_static_to_public(path, parent_path=""):
     path = os.path.expanduser(path)
