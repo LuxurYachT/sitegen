@@ -8,10 +8,23 @@ from parentnode import ParentNode
 
 def main():
     move_static_to_public(os.path.expanduser("~/workspace/sitegen/static"))
-    generate_page(os.path.expanduser("~/workspace/sitegen/content/index.md"), os.path.expanduser("~/workspace/sitegen/template.html"), os.path.expanduser("~/workspace/sitegen/public"))
+    generate_pages_recursive(os.path.expanduser("~/workspace/sitegen/content"), os.path.expanduser("~/workspace/sitegen/template.html"), os.path.expanduser("~/workspace/sitegen/public"))
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    dir_contents = os.listdir(dir_path_content)
+    for i in dir_contents:
+        item_path = os.path.join(dir_path_content, i)
+        if os.path.isfile(item_path):
+            generate_page(item_path, template_path, dest_dir_path, i.split(".")[0])
+        else:
+            new_dest_path = os.path.join(dest_dir_path, i)
+            if not os.path.exists(new_dest_path):
+                os.makedirs(new_dest_path)
+            generate_pages_recursive(item_path, template_path, new_dest_path)
+
+
+def generate_page(from_path, template_path, dest_path, filename=""):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     with open(from_path) as file:
         markdown = file.read()
@@ -22,7 +35,7 @@ def generate_page(from_path, template_path, dest_path):
     new_page = template.replace("{{ Title }}", title).replace("{{ Content }}", html)
     if not os.path.exists(dest_path):
         os.makedirs(dest_path)
-    target_file_path = os.path.join(dest_path, "index.html")
+    target_file_path = os.path.join(dest_path, f"{filename}.html")
     with open(target_file_path, "w") as file:
         file.write(new_page)
 
