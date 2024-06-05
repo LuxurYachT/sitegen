@@ -87,3 +87,7 @@ class TestSplit(unittest.TestCase):
         self.assertEqual(check_for_heading("## This is a heading"), True)
         self.assertEqual(check_for_heading(" This isn't"), False)
         self.assertEqual(check_for_heading("This is a #"), False)
+
+    def test_block_typer(self):
+        ordered_list = "1. First\n2.Second\n3. Third"
+        self.assertEqual(block_to_block_type(ordered_list), [BlockNode(ordered_list, "ol")])

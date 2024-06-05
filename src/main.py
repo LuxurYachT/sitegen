@@ -92,7 +92,8 @@ def id_text_type(text):
         return "bold"
     if text.startswith("*"):
         return "italic"
-    if text.startswith("`"):
+    if text.startswith("```"):
+        print(text)
         return "code"
     else:
         return "text"
@@ -215,10 +216,10 @@ def block_to_block_type(blocks):
             new_text = block
         elif check_unordered(block):
             new_type = "ul"
-            new_text = strip_multiline(block.split("\n"))
+            new_text = listify(block)
         elif check_ordered(block):
             new_type = "ol"
-            new_text = strip_multiline(block.split("\n"))
+            new_text = listify(block)
         elif chcek_for_quote(block):
             new_type = "quoteblock"
             new_text = block.split(" ", 1)[1]
@@ -228,10 +229,11 @@ def block_to_block_type(blocks):
         typed_blocks.append(BlockNode(new_text, new_type))
     return typed_blocks
 
-def strip_multiline(lines):
+def listify(text):
     new_lines = []
+    lines = text.split("\n")
     for line in lines:
-        new_lines.append(line.split(" ", 1)[1])
+        new_lines.append(f"<li>{line.split(" ", 1)[1]}</li>")
     return "\n".join(new_lines)
 
 def check_for_heading(block):
